@@ -27,8 +27,8 @@
  * @subpackage Notes_Manage/includes
  * @author     Maha Ali <maha@gmail.com>
  */
-class Notes_Manage
-{
+class Notes_Manage {
+
 
 	/**
 	 * The loader that's responsible for maintaining and registering all hooks that power
@@ -67,9 +67,8 @@ class Notes_Manage
 	 *
 	 * @since    1.0.0
 	 */
-	public function __construct()
-	{
-		if (defined('NOTES_MANAGE_VERSION')) {
+	public function __construct() {
+		if ( defined( 'NOTES_MANAGE_VERSION' ) ) {
 			$this->version = NOTES_MANAGE_VERSION;
 		} else {
 			$this->version = '1.0.0';
@@ -98,31 +97,30 @@ class Notes_Manage
 	 * @since    1.0.0
 	 * @access   private
 	 */
-	private function load_dependencies()
-	{
+	private function load_dependencies() {
 
 		/**
 		 * The class responsible for orchestrating the actions and filters of the
 		 * core plugin.
 		 */
-		require_once plugin_dir_path(dirname(__FILE__)) . 'includes/class-notes-manage-loader.php';
+		require_once plugin_dir_path( __DIR__ ) . 'includes/class-notes-manage-loader.php';
 
 		/**
 		 * The class responsible for defining internationalization functionality
 		 * of the plugin.
 		 */
-		require_once plugin_dir_path(dirname(__FILE__)) . 'includes/class-notes-manage-i18n.php';
+		require_once plugin_dir_path( __DIR__ ) . 'includes/class-notes-manage-i18n.php';
 
 		/**
 		 * The class responsible for defining all actions that occur in the admin area.
 		 */
-		require_once plugin_dir_path(dirname(__FILE__)) . 'admin/class-notes-manage-admin.php';
+		require_once plugin_dir_path( __DIR__ ) . 'admin/class-notes-manage-admin.php';
 
 		/**
 		 * The class responsible for defining all actions that occur in the public-facing
 		 * side of the site.
 		 */
-		require_once plugin_dir_path(dirname(__FILE__)) . 'public/class-notes-manage-public.php';
+		require_once plugin_dir_path( __DIR__ ) . 'public/class-notes-manage-public.php';
 
 		$this->loader = new Notes_Manage_Loader();
 	}
@@ -136,12 +134,11 @@ class Notes_Manage
 	 * @since    1.0.0
 	 * @access   private
 	 */
-	private function set_locale()
-	{
+	private function set_locale() {
 
 		$plugin_i18n = new Notes_Manage_i18n();
 
-		$this->loader->add_action('plugins_loaded', $plugin_i18n, 'load_plugin_textdomain');
+		$this->loader->add_action( 'plugins_loaded', $plugin_i18n, 'load_plugin_textdomain' );
 	}
 
 	/**
@@ -151,13 +148,12 @@ class Notes_Manage
 	 * @since    1.0.0
 	 * @access   private
 	 */
-	private function define_admin_hooks()
-	{
+	private function define_admin_hooks() {
 
-		$plugin_admin = new Notes_Manage_Admin($this->get_plugin_name(), $this->get_version());
+		$plugin_admin = new Notes_Manage_Admin( $this->get_plugin_name(), $this->get_version() );
 
-		$this->loader->add_action('admin_enqueue_scripts', $plugin_admin, 'enqueue_styles');
-		$this->loader->add_action('admin_enqueue_scripts', $plugin_admin, 'enqueue_scripts');
+		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_styles' );
+		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_scripts' );
 	}
 
 	/**
@@ -167,26 +163,36 @@ class Notes_Manage
 	 * @since    1.0.0
 	 * @access   private
 	 */
-	private function define_public_hooks()
-	{
+	private function define_public_hooks() {
 
-		$plugin_public = new Notes_Manage_Public($this->get_plugin_name(), $this->get_version());
+		$plugin_public = new Notes_Manage_Public( $this->get_plugin_name(), $this->get_version() );
 
+		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_styles' );
+		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_scripts' );
 
-		$this->loader->add_action('wp_enqueue_scripts', $plugin_public, 'enqueue_styles');
-		$this->loader->add_action('wp_enqueue_scripts', $plugin_public, 'enqueue_scripts');
-		
-		// Ajax request when user is logged in
-		$this->loader->add_action('wp_ajax_insert_note', $plugin_public, 'insert_note');
-		
-		// Ajax request when user is not logged in
-		$this->loader->add_action('wp_ajax_nopriv_insert_note', $plugin_public, 'insert_note');
+		add_shortcode( 'show_notes', array( $plugin_public, 'show_notes_callback' ) );
 
-		//$this->loader->add_shortcode( 'show_notes', $plugin_public, 'enqueue_scripts' );
+		// Ajax request for insert when user is logged in
+		$this->loader->add_action( 'wp_ajax_insert_note', $plugin_public, 'insert_note' );
 
-		//add_shortcode( 'show_notes', $plugin_public, 'show_notes_callback' );
+		// Ajax request for insert when user is not logged in
+		$this->loader->add_action( 'wp_ajax_nopriv_insert_note', $plugin_public, 'insert_note' );
 
-		add_shortcode('show_notes',  array( $plugin_public , 'show_notes_callback' ));
+		// Ajax request for delete when user is logged in
+		$this->loader->add_action( 'wp_ajax_delete_note', $plugin_public, 'delete_note' );
+
+		// Ajax request for delete when user is not logged in
+		$this->loader->add_action( 'wp_ajax_nopriv_delete_note', $plugin_public, 'delete_note' );
+
+		// Ajax request for update when user is not logged in
+		$this->loader->add_action( 'wp_ajax_update_note', $plugin_public, 'update_note' );
+
+		// Ajax request for update when user is not logged in
+		$this->loader->add_action( 'wp_ajax_nopriv_update_note', $plugin_public, 'update_note' );
+
+		// $this->loader->add_shortcode( 'show_notes', $plugin_public, 'enqueue_scripts' );
+
+		// add_shortcode( 'show_notes', $plugin_public, 'show_notes_callback' );
 	}
 
 	/**
@@ -194,8 +200,7 @@ class Notes_Manage
 	 *
 	 * @since    1.0.0
 	 */
-	public function run()
-	{
+	public function run() {
 		$this->loader->run();
 	}
 
@@ -206,8 +211,7 @@ class Notes_Manage
 	 * @since     1.0.0
 	 * @return    string    The name of the plugin.
 	 */
-	public function get_plugin_name()
-	{
+	public function get_plugin_name() {
 		return $this->plugin_name;
 	}
 
@@ -217,8 +221,7 @@ class Notes_Manage
 	 * @since     1.0.0
 	 * @return    Notes_Manage_Loader    Orchestrates the hooks of the plugin.
 	 */
-	public function get_loader()
-	{
+	public function get_loader() {
 		return $this->loader;
 	}
 
@@ -228,8 +231,7 @@ class Notes_Manage
 	 * @since     1.0.0
 	 * @return    string    The version number of the plugin.
 	 */
-	public function get_version()
-	{
+	public function get_version() {
 		return $this->version;
 	}
 }

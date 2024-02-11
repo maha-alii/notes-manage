@@ -1,5 +1,4 @@
 <?php
-
 /**
  * The public-facing functionality of the plugin.
  *
@@ -20,8 +19,8 @@
  * @subpackage Notes_Manage/public
  * @author     Maha Ali <maha@gmail.com>
  */
-class Notes_Manage_Public
-{
+class Notes_Manage_Public {
+
 	public $id;
 	public $title;
 	public $description;
@@ -51,8 +50,7 @@ class Notes_Manage_Public
 	 * @param      string $plugin_name       The name of the plugin.
 	 * @param      string $version    The version of this plugin.
 	 */
-	public function __construct($plugin_name, $version)
-	{
+	public function __construct( $plugin_name, $version ) {
 
 		$this->plugin_name = $plugin_name;
 		$this->version     = $version;
@@ -63,8 +61,7 @@ class Notes_Manage_Public
 	 *
 	 * @since    1.0.0
 	 */
-	public function enqueue_styles()
-	{
+	public function enqueue_styles() {
 
 		/**
 		 * This function is provided for demonstration purposes only.
@@ -78,7 +75,7 @@ class Notes_Manage_Public
 		 * class.
 		 */
 
-		wp_enqueue_style($this->plugin_name, plugin_dir_url(__FILE__) . 'css/notes-manage-public.css', array(), $this->version, 'all');
+		wp_enqueue_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'css/notes-manage-public.css', array(), $this->version, 'all' );
 	}
 
 	/**
@@ -86,8 +83,7 @@ class Notes_Manage_Public
 	 *
 	 * @since    1.0.0
 	 */
-	public function enqueue_scripts()
-	{
+	public function enqueue_scripts() {
 
 		/**
 		 * This function is provided for demonstration purposes only.
@@ -101,24 +97,98 @@ class Notes_Manage_Public
 		 * class.
 		 */
 
-		wp_enqueue_script($this->plugin_name, plugin_dir_url(__FILE__) . 'js/notes-manage-public.js', array('jquery'), $this->version, false);
+		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/notes-manage-public.js', array( 'jquery' ), $this->version, false );
 	}
-	
+
+
+	/**
+	 * Executes the AJAX request on update_note action triggered by JS
+	 *
+	 * @return void
+	 */
+	public function update_note() {
+		// No note variable found, or invalid delete_id, so exit.
+		if ( ! isset( $_GET['delete_id'] ) || ! is_numeric( $_GET['delete_id'] ) ) {
+			die();
+		}
+		// Update Note Ajax Callback code.
+		global $wpdb;
+		$note_id     = $_POST['id'];
+		$title       = $_POST['title'];
+		$description = $_POST['description'];
+		$wpdb->update(
+			'notes',
+			array(
+				'title'       => $title,  // string.
+				'description' => $description,   // string.
+			),
+			array( 'ID' => $note_id ),
+			array(
+				'%s',
+				'%s',
+			),
+			array( '%d' )
+		);
+	}
+
+
+
+
+	/**
+	 * Executes the AJAX request on delete_note action triggered by JS
+	 *
+	 * @return void
+	 */
+	public function delete_note() {
+		// No note variable found, or invalid delete_id, so exit.
+		if ( ! isset( $_GET['delete_id'] ) || ! is_numeric( $_GET['delete_id'] ) ) {
+			die();
+		}
+		// Insert Note Ajax Callback code.
+		global $wpdb;
+		$id = wp_unslash( $_GET['delete_id'] );
+		$wpdb->delete(
+			$wpdb->prefix . 'notes',         // table name with dynamic prefix.
+			array( 'id' => $id ),                      // which id need to delete.
+			array( '%d' ),                             // make sure the id format.
+		);
+	}
+
+
 	/**
 	 * Executes the AJAX request on insert_note action triggered by JS
 	 *
 	 * @return void
 	 */
 	public function insert_note() {
-		// Insert Note Ajax Callback code
-		echo "insert note callback";
-		die;
+		// Insert Note Ajax Callback code.
+
+		if ( isset( $_POST['title'] ) && isset( $_POST['description'] ) ) {
+			$title       = wp_unslash( $_POST['title'] );
+			$description = wp_unslash( $_POST['description'] );
+			// Check if title is empty.
+			if ( ! isset( $_POST['title'] ) ) {
+				return;
+			}
+			global $wpdb;
+			$table  = $wpdb->prefix . 'notes';
+			$data   = array(
+				'title'       => $title,
+				'description' => $description,
+			);
+			$format = array( '%s', '%s' );
+			$wpdb->insert( $table, $data, $format );
+		}
 	}
-	
-	public function show_notes_callback()
-	{
+
+	/**
+	 * Basic structure of our code
+	 *
+	 * @return void
+	 */
+	public function show_notes_callback() {
 		global $wpdb;
-?>
+		?>
 		<!DOCTYPE html>
 		<html>
 
@@ -126,11 +196,8 @@ class Notes_Manage_Public
 			<meta charset="UTF-8">
 			<title>Coding Arena</title>
 			<link href="https://fonts.googleapis.com/css?family=Montserrat:400,500,600,700" rel="stylesheet">
-			<link href="css/note-styles.css" rel="stylesheet">
 			<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.min.js" integrity="sha384-cuYeSxntonz0PPNlHhBs68uyIAVpIIOZZ5JqeqvYYIcEL727kskC66kF92t6Xl2V" crossorigin="anonymous"></script>
 			<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-			<script src="js/crud.js"> </script>
-			<link href="css/template.css" rel="stylesheet">
 			<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
 
 		</head>
@@ -156,31 +223,31 @@ class Notes_Manage_Public
 						</tr>
 					</thead>
 					<tbody id="list-notes-body">
-						<?php
+					<?php
 
-						$notes = $wpdb->get_results( "SELECT id, title , description FROM {$wpdb->prefix}notes" );
-						foreach ( $notes as $notes_data ) {
-							$this->id          = $notes_data->id;
-							$this->title       = $notes_data->title;
-							$this->description = $notes_data->description;
+					$notes = $wpdb->get_results( "SELECT id, title , description FROM {$wpdb->prefix}notes" );
+					foreach ( $notes as $notes_data ) {
+						$this->id          = $notes_data->id;
+						$this->title       = $notes_data->title;
+						$this->description = $notes_data->description;
 						?>
 							<tr id=note-<?php echo htmlspecialchars( $this->id ); ?>>
 								<th class="id"><?php echo htmlspecialchars( $this->id ); ?></th>
-								<td class="note-title"><?php echo htmlspecialchars(	$this->title ); ?></td>
+								<td class="note-title"><?php echo htmlspecialchars( $this->title ); ?></td>
 								<td class="note-description"><?php echo htmlspecialchars( $this->description ); ?></td>
 								<td>
-									<a onclick="update_note(<?php echo htmlspecialchars($this->id); ?>)">
+									<a onclick="update_note(<?php echo htmlspecialchars( $this->id ); ?>)">
 										<button class="btn btn-lg btn-primary">Update</button>
 									</a>
-									<a onclick="delete_note(<?php echo htmlspecialchars($this->id); ?>)">
+									<a onclick="delete_note(<?php echo htmlspecialchars( $this->id ); ?>)">
 										<button class="btn btn-lg btn-danger">Delete</button>
 									</a>
 								</td>
 							</tr>
-						<?php
-						}
+							<?php
+					}
 
-						?>
+					?>
 					</tbody>
 				</table>
 
@@ -198,7 +265,7 @@ class Notes_Manage_Public
 							<input class="form-control" name="description" id="description">
 						</div>
 						<input class="form-control" type="hidden" name="note_id" id="note_id" value="">
-						<button onclick="insert_note()" type="button" class="btn btn-primary" name="save">Save</button>
+						<button onclick="insert_note()" id="save-button" type="button" class="btn btn-primary" name="save">Save</button>
 					</form>
 				</div>
 			</div>
@@ -206,6 +273,6 @@ class Notes_Manage_Public
 
 		</html>
 
-<?php
+			<?php
 	}
 }

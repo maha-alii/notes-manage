@@ -2,3 +2,10 @@
  * All of the CSS for your public-facing functionality should be
  * included in this file.
  */
+ #add-note-wrap {
+    display: none; 
+}
+
+#title-warning{
+    display: none;
+}
