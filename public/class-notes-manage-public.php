@@ -20,7 +20,9 @@
  * @author     Maha Ali <maha@gmail.com>
  */
 class Notes_Manage_Public {
-
+	/**
+	 * The id  we get from our database table.
+	 */
 	public $id;
 	public $title;
 	public $description;
@@ -98,7 +100,16 @@ class Notes_Manage_Public {
 		 */
 
 		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/notes-manage-public.js', array( 'jquery' ), $this->version, false );
+		wp_localize_script(
+			$this->plugin_name,
+			'notes_manage_public_ajax',
+			array(
+				'ajaxurl' => admin_url( 'admin-ajax.php' ),
+			)
+		);
 	}
+
+
 
 
 	/**
@@ -107,32 +118,29 @@ class Notes_Manage_Public {
 	 * @return void
 	 */
 	public function update_note() {
+
 		// No note variable found, or invalid delete_id, so exit.
-		if ( ! isset( $_GET['delete_id'] ) || ! is_numeric( $_GET['delete_id'] ) ) {
+		if ( ! isset( $_POST['id'] ) ) {
 			die();
 		}
-		// Update Note Ajax Callback code.
-		global $wpdb;
-		$note_id     = $_POST['id'];
-		$title       = $_POST['title'];
-		$description = $_POST['description'];
-		$wpdb->update(
-			'notes',
-			array(
-				'title'       => $title,  // string.
-				'description' => $description,   // string.
-			),
-			array( 'ID' => $note_id ),
-			array(
-				'%s',
-				'%s',
-			),
-			array( '%d' )
-		);
+
+		// Update note on user sumbit.
+		if ( isset( $_POST['title'] ) ) {
+				// Update Note Ajax Callback code.
+				global $wpdb;
+				$note_id     = wp_unslash( $_POST['id'] );
+				$title       = wp_unslash( $_POST['title'] );
+				$description = wp_unslash( $_POST['description'] );
+				// Check if title is empty.
+			if ( ! $title ) {
+				return;
+			}
+
+			$wpdb->query(
+				$wpdb->prepare( "UPDATE {$wpdb->prefix}notes SET title = %s , description = %s WHERE id = %d", $title, $description, $note_id )
+			);
+		}
 	}
-
-
-
 
 	/**
 	 * Executes the AJAX request on delete_note action triggered by JS
@@ -140,18 +148,10 @@ class Notes_Manage_Public {
 	 * @return void
 	 */
 	public function delete_note() {
-		// No note variable found, or invalid delete_id, so exit.
-		if ( ! isset( $_GET['delete_id'] ) || ! is_numeric( $_GET['delete_id'] ) ) {
-			die();
-		}
-		// Insert Note Ajax Callback code.
+		// Delete Note Ajax Callback code.
 		global $wpdb;
-		$id = wp_unslash( $_GET['delete_id'] );
-		$wpdb->delete(
-			$wpdb->prefix . 'notes',         // table name with dynamic prefix.
-			array( 'id' => $id ),                      // which id need to delete.
-			array( '%d' ),                             // make sure the id format.
-		);
+
+		$wpdb->query( $wpdb->prepare( "DELETE FROM {$wpdb->prefix}notes WHERE id = $id" ) );
 	}
 
 
@@ -171,13 +171,17 @@ class Notes_Manage_Public {
 				return;
 			}
 			global $wpdb;
-			$table  = $wpdb->prefix . 'notes';
-			$data   = array(
-				'title'       => $title,
-				'description' => $description,
+
+			$wpdb->query(
+				$wpdb->prepare(
+					"INSERT INTO {$wpdb->prefix}notes( title, description )
+					VALUES ( %s, %s )",
+					array(
+						$title,
+						$description,
+					)
+				)
 			);
-			$format = array( '%s', '%s' );
-			$wpdb->insert( $table, $data, $format );
 		}
 	}
 
@@ -239,8 +243,9 @@ class Notes_Manage_Public {
 									<a onclick="update_note(<?php echo htmlspecialchars( $this->id ); ?>)">
 										<button class="btn btn-lg btn-primary">Update</button>
 									</a>
+								
 									<a onclick="delete_note(<?php echo htmlspecialchars( $this->id ); ?>)">
-										<button class="btn btn-lg btn-danger">Delete</button>
+										<button class="btn btn-lg btn-danger"  >Delete</button>
 									</a>
 								</td>
 							</tr>

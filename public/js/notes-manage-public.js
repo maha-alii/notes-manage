@@ -30,6 +30,22 @@
     //$(document).ready(function () {
     //});
 })(jQuery);
+function update_note(id) {
+    var title = jQuery('#note-' + id)
+        .find('.note-title')
+        .text()
+    var description = jQuery('#note-' + id)
+        .find('.note-description ')
+        .text()
+
+    jQuery('#list-notes-wrap').hide()
+    jQuery('#title-warning').hide()
+    jQuery('#add-note-wrap').show()
+    jQuery('#note_id').val(id)
+    jQuery('#title').val(title)
+    jQuery('#description').val(description)
+}
+
 function insert_note() {
     var note_id = jQuery('#note_id').val()
     var title = jQuery('#title').val()
@@ -42,7 +58,7 @@ function insert_note() {
     /* When Updating a Note Via AJAX */
     if (note_id) {
         jQuery.ajax({
-            url: "<?php echo admin_url('admin-ajax.php'); ?>",
+            url: notes_manage_public_ajax.ajaxurl,
             type: 'post',
             data: {
                 action: "update_note",
@@ -74,7 +90,7 @@ function insert_note() {
     } else {
         /* When Inserting a Note Via AJAX */
         jQuery.ajax({
-            url: 'admin-ajax.php',
+            url: notes_manage_public_ajax.ajaxurl,
             type: 'post',
             data: {
                 action: "insert_note",
@@ -143,14 +159,16 @@ function show_insert_note() {
 }
 
 function delete_note(id) {
+    console.log(id)
     jQuery.ajax({
-        url: 'admin-ajax.php?delete_id=' + id,
-        type: 'get',
+        url: 'notes_manage_public_ajax.ajaxurl'  + id,
+        type: 'post',
         data: { action: "delete_note" },
         success: function (response) {
             // You will get response from your PHP page (what you echo or print)
             if (response == 1) {
-                jQuery('#note-' + id).remove()
+                
+                jQuery('#note-' +id).remove()
             } else {
                 // show error if not deleted
                 console.log(response)
