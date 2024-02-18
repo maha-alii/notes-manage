@@ -109,9 +109,6 @@ class Notes_Manage_Public {
 		);
 	}
 
-
-
-
 	/**
 	 * Executes the AJAX request on update_note action triggered by JS
 	 *
@@ -148,12 +145,18 @@ class Notes_Manage_Public {
 	 * @return void
 	 */
 	public function delete_note() {
-		// Delete Note Ajax Callback code.
-		global $wpdb;
 
-		$wpdb->query( $wpdb->prepare( "DELETE FROM {$wpdb->prefix}notes WHERE id = $id" ) );
+		// No note variable found, or invalid delete_id, so exit
+		if ( ! isset( $_GET['delete_id'] ) || ! is_numeric( $_GET['delete_id'] ) ) {
+			die();
+		}
+		if ( isset( $_GET['delete_id'] ) ) {
+			// Delete Note Ajax Callback code.
+			global $wpdb;
+			$id = wp_unslash( $_GET['delete_id'] );
+			$wpdb->query( $wpdb->prepare( "DELETE FROM {$wpdb->prefix}notes WHERE id = %d", $id ) );
+		}
 	}
-
 
 	/**
 	 * Executes the AJAX request on insert_note action triggered by JS
@@ -216,7 +219,7 @@ class Notes_Manage_Public {
 				<a onclick="show_list_note()">
 					<button class="btn btn-lg btn-primary my-5  float-right-top ">List of notes</button>
 				</a>
-
+				
 				<table id="list-notes-wrap" class="table">
 					<thead>
 						<tr>
@@ -244,12 +247,12 @@ class Notes_Manage_Public {
 										<button class="btn btn-lg btn-primary">Update</button>
 									</a>
 								
-									<a onclick="delete_note(<?php echo htmlspecialchars( $this->id ); ?>)">
-										<button class="btn btn-lg btn-danger"  >Delete</button>
-									</a>
+									<a   onclick="delete_note(<?php echo htmlspecialchars( $this->id ); ?>)">
+										<button  class="btn btn-lg btn-danger"  >Delete</button>
+									</a> 
 								</td>
 							</tr>
-							<?php
+						<?php
 					}
 
 					?>

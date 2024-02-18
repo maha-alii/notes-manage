@@ -159,16 +159,23 @@ function show_insert_note() {
 }
 
 function delete_note(id) {
-    console.log(id)
+    jQuery('#note-' + id).val(id)
+    var delete_id = jQuery('#note-' + id).val()
+    //console.log(delete_id)
+
     jQuery.ajax({
-        url: 'notes_manage_public_ajax.ajaxurl'  + id,
-        type: 'post',
-        data: { action: "delete_note" },
+        url: notes_manage_public_ajax.ajaxurl,
+        type: 'get',
+        data: {
+
+            action: "delete_note",
+            delete_id: delete_id
+        },
         success: function (response) {
             // You will get response from your PHP page (what you echo or print)
             if (response == 1) {
-                
-                jQuery('#note-' +id).remove()
+
+                delete_id.remove()
             } else {
                 // show error if not deleted
                 console.log(response)
@@ -179,4 +186,3 @@ function delete_note(id) {
         },
     })
 }
-
