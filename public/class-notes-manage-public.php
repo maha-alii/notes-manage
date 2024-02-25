@@ -22,9 +22,22 @@
 class Notes_Manage_Public {
 	/**
 	 * The id  we get from our database table.
+	 *
+	 * @var      int    $id    The id  we get from our database table.
 	 */
 	public $id;
+	/**
+	 * The tite  we get from our database table.
+	 *
+	 * @var      int    $title    The title  we get from our database table.
+	 */
+
 	public $title;
+	/**
+	 * The description  we get from our database table.
+	 *
+	 * @var      string    $description   The description  we get from our database table.
+	 */
 	public $description;
 
 	/**
@@ -105,6 +118,8 @@ class Notes_Manage_Public {
 			'notes_manage_public_ajax',
 			array(
 				'ajaxurl' => admin_url( 'admin-ajax.php' ),
+				// 'nonce'=> wp_create_nonce( 'ajax-nonce' ),
+
 			)
 		);
 	}
@@ -117,18 +132,18 @@ class Notes_Manage_Public {
 	public function update_note() {
 
 		// No note variable found, or invalid delete_id, so exit.
-		if ( ! isset( $_POST['id'] ) ) {
+		if ( ! isset( $_POST['id'] ) && ! wp_verify_nonce( 'notes_form_save', 'generate_nonce' ) ) {
 			die();
 		}
-
 		// Update note on user sumbit.
-		if ( isset( $_POST['title'] ) ) {
-				// Update Note Ajax Callback code.
-				global $wpdb;
-				$note_id     = wp_unslash( $_POST['id'] );
-				$title       = wp_unslash( $_POST['title'] );
-				$description = wp_unslash( $_POST['description'] );
-				// Check if title is empty.
+		if ( isset( $_POST['title'] ) && isset( $_POST['description'] ) ) {
+
+			// Update Note Ajax Callback code.
+			global $wpdb;
+			$note_id     = sanitize_text_field( wp_unslash( $_POST['id'] ) );
+			$title       = sanitize_text_field( wp_unslash( $_POST['title'] ) );
+			$description = sanitize_text_field( wp_unslash( $_POST['description'] ) );
+			// Check if title is empty.
 			if ( ! $title ) {
 				return;
 			}
@@ -139,6 +154,8 @@ class Notes_Manage_Public {
 		}
 	}
 
+
+
 	/**
 	 * Executes the AJAX request on delete_note action triggered by JS
 	 *
@@ -146,17 +163,20 @@ class Notes_Manage_Public {
 	 */
 	public function delete_note() {
 
-		// No note variable found, or invalid delete_id, so exit
-		if ( ! isset( $_GET['delete_id'] ) || ! is_numeric( $_GET['delete_id'] ) ) {
+		// No note variable found, or invalid delete_id, so exit.
+		if ( ! isset( $_GET['delete_id'] ) || ! is_numeric( $_GET['delete_id'] ) && ! wp_verify_nonce( 'notes_form_save', 'generate_nonce' ) ) {
 			die();
 		}
 		if ( isset( $_GET['delete_id'] ) ) {
-			// Delete Note Ajax Callback code.
-			global $wpdb;
-			$id = wp_unslash( $_GET['delete_id'] );
-			$wpdb->query( $wpdb->prepare( "DELETE FROM {$wpdb->prefix}notes WHERE id = %d", $id ) );
+				// Delete Note Ajax Callback code.
+				global $wpdb;
+				$id = sanitize_text_field( wp_unslash( $_GET['delete_id'] ) );
+				var_dump( $id );
+				$wpdb->query( $wpdb->prepare( "DELETE FROM {$wpdb->prefix}notes WHERE id = %d", $id ) );
+
 		}
 	}
+
 
 	/**
 	 * Executes the AJAX request on insert_note action triggered by JS
@@ -164,11 +184,14 @@ class Notes_Manage_Public {
 	 * @return void
 	 */
 	public function insert_note() {
-		// Insert Note Ajax Callback code.
 
+		if ( ! wp_verify_nonce( 'notes_form_save', 'generate_nonce' ) ) {
+			die();
+		}
 		if ( isset( $_POST['title'] ) && isset( $_POST['description'] ) ) {
-			$title       = wp_unslash( $_POST['title'] );
-			$description = wp_unslash( $_POST['description'] );
+			// Insert Note Ajax Callback code.
+			$title       = sanitize_text_field( wp_unslash( $_POST['title'] ) );
+			$description = sanitize_text_field( wp_unslash( $_POST['description'] ) );
 			// Check if title is empty.
 			if ( ! isset( $_POST['title'] ) ) {
 				return;
@@ -178,7 +201,7 @@ class Notes_Manage_Public {
 			$wpdb->query(
 				$wpdb->prepare(
 					"INSERT INTO {$wpdb->prefix}notes( title, description )
-					VALUES ( %s, %s )",
+							VALUES ( %s, %s )",
 					array(
 						$title,
 						$description,
@@ -187,6 +210,7 @@ class Notes_Manage_Public {
 			);
 		}
 	}
+
 
 	/**
 	 * Basic structure of our code
@@ -230,32 +254,32 @@ class Notes_Manage_Public {
 						</tr>
 					</thead>
 					<tbody id="list-notes-body">
-					<?php
+		<?php
 
-					$notes = $wpdb->get_results( "SELECT id, title , description FROM {$wpdb->prefix}notes" );
-					foreach ( $notes as $notes_data ) {
-						$this->id          = $notes_data->id;
-						$this->title       = $notes_data->title;
-						$this->description = $notes_data->description;
-						?>
-							<tr id=note-<?php echo htmlspecialchars( $this->id ); ?>>
-								<th class="id"><?php echo htmlspecialchars( $this->id ); ?></th>
-								<td class="note-title"><?php echo htmlspecialchars( $this->title ); ?></td>
-								<td class="note-description"><?php echo htmlspecialchars( $this->description ); ?></td>
+		$notes = $wpdb->get_results( "SELECT id, title , description FROM {$wpdb->prefix}notes" );
+		foreach ( $notes as $notes_data ) {
+			$this->id          = $notes_data->id;
+			$this->title       = $notes_data->title;
+			$this->description = $notes_data->description;
+			?>
+							<tr id=note-<?php echo esc_html( $this->id ); ?>>
+								<th class="id"><?php echo esc_html( $this->id ); ?></th>
+								<td class="note-title"><?php echo esc_html( $this->title ); ?></td>
+								<td class="note-description"><?php echo esc_html( $this->description ); ?></td>
 								<td>
-									<a onclick="update_note(<?php echo htmlspecialchars( $this->id ); ?>)">
+									<a onclick="update_note(<?php echo esc_html( $this->id ); ?>)">
 										<button class="btn btn-lg btn-primary">Update</button>
 									</a>
 								
-									<a   onclick="delete_note(<?php echo htmlspecialchars( $this->id ); ?>)">
+									<a   onclick="delete_note(<?php echo esc_html( $this->id ); ?>)">
 										<button  class="btn btn-lg btn-danger"  >Delete</button>
 									</a> 
 								</td>
 							</tr>
-						<?php
-					}
+			<?php
+		}
 
-					?>
+		?>
 					</tbody>
 				</table>
 
@@ -263,6 +287,7 @@ class Notes_Manage_Public {
 				<div id="add-note-wrap">
 					<h2>Add Notes</h2>
 					<form class="form" method="post">
+						<?php wp_nonce_field( 'notes_form_save', 'generate_nonce' ); ?>
 						<div class="form-group">
 							<label for="title">Title:</label>
 							<input class="form-control" name="title" id="title" required>
@@ -281,6 +306,6 @@ class Notes_Manage_Public {
 
 		</html>
 
-			<?php
+		<?php
 	}
 }
