@@ -62,6 +62,7 @@ function insert_note() {
             type: 'post',
             data: {
                 action: "update_note",
+                //nonce: notes_manage_public_ajax.nonce,
                 id: note_id,
                 title: title,
                 description: description,
@@ -94,6 +95,7 @@ function insert_note() {
             type: 'post',
             data: {
                 action: "insert_note",
+               // nonce: notes_manage_public_ajax.nonce,
                 title: title,
                 description: description,
             },
@@ -161,7 +163,7 @@ function show_insert_note() {
 function delete_note(id) {
     jQuery('#note-' + id).val(id)
     var delete_id = jQuery('#note-' + id).val()
-    //console.log(delete_id)
+    console.log(delete_id)
 
     jQuery.ajax({
         url: notes_manage_public_ajax.ajaxurl,
@@ -169,7 +171,8 @@ function delete_note(id) {
         data: {
 
             action: "delete_note",
-            delete_id: delete_id
+            delete_id: delete_id,
+           // nonce: notes_manage_public_ajax.nonce,
         },
         success: function (response) {
             // You will get response from your PHP page (what you echo or print)

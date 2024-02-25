@@ -1,5 +1,4 @@
 <?php
-
 /**
  * The file that defines the core plugin class
  *
@@ -172,22 +171,22 @@ class Notes_Manage {
 
 		add_shortcode( 'show_notes', array( $plugin_public, 'show_notes_callback' ) );
 
-		// Ajax request for insert when user is logged in
+		// Ajax request for insert when user is logged in.
 		$this->loader->add_action( 'wp_ajax_insert_note', $plugin_public, 'insert_note' );
 
-		// Ajax request for insert when user is not logged in
+		// Ajax request for insert when user is not logged in.
 		$this->loader->add_action( 'wp_ajax_nopriv_insert_note', $plugin_public, 'insert_note' );
 
-		// Ajax request for delete when user is logged in
+		// Ajax request for delete when user is logged in.
 		$this->loader->add_action( 'wp_ajax_delete_note', $plugin_public, 'delete_note' );
 
-		// Ajax request for delete when user is not logged in
+		// Ajax request for delete when user is not logged in.
 		$this->loader->add_action( 'wp_ajax_nopriv_delete_note', $plugin_public, 'delete_note' );
 
-		// Ajax request for update when user is not logged in
+		// Ajax request for update when user is not logged in.
 		$this->loader->add_action( 'wp_ajax_update_note', $plugin_public, 'update_note' );
 
-		// Ajax request for update when user is not logged in
+		// Ajax request for update when user is not logged in.
 		$this->loader->add_action( 'wp_ajax_nopriv_update_note', $plugin_public, 'update_note' );
 
 		// $this->loader->add_shortcode( 'show_notes', $plugin_public, 'enqueue_scripts' );
