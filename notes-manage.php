@@ -12,7 +12,7 @@
  * @package           Notes_Manage
  *
  * @wordpress-plugin
- * Plugin Name:       Notes Managment
+ * Plugin Name:       Notes Management
  * Plugin URI:        https://wordpress.org/plugins/video-conferencing-with-bbb/
  * Description:       Manage notes on frontend with AJAX
  * Version:           1.0.0
