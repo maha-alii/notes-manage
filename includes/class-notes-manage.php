@@ -189,6 +189,12 @@ class Notes_Manage {
 		// Ajax request for update when user is not logged in.
 		$this->loader->add_action( 'wp_ajax_nopriv_update_note', $plugin_public, 'update_note' );
 
+		//  when user is  logged in.
+		$this->loader->add_action( 'wp_ajax', $plugin_public, 'user_login' );
+
+		//  when user is not logged in.
+		$this->loader->add_action( 'wp_ajax_nopriv', $plugin_public, 'not_login' );
+
 		// $this->loader->add_shortcode( 'show_notes', $plugin_public, 'enqueue_scripts' );
 
 		// add_shortcode( 'show_notes', $plugin_public, 'show_notes_callback' );

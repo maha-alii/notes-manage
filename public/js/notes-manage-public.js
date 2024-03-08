@@ -30,7 +30,7 @@
     //$(document).ready(function () {
     //});
 })(jQuery);
-function update_note(id) {
+function wp_fn_notes_update_note(id) {
     var title = jQuery('#note-' + id)
         .find('.note-title')
         .text()
@@ -46,7 +46,7 @@ function update_note(id) {
     jQuery('#description').val(description)
 }
 
-function insert_note() {
+function wp_fn_notes_insert_note() {
     var note_id = jQuery('#note_id').val()
     var title = jQuery('#title').val()
     var description = jQuery('#description').val()
@@ -144,12 +144,12 @@ function insert_note() {
     }
 }
 
-function show_list_note() {
+function wp_fn_notes_show_list_note() {
     jQuery('#list-notes-wrap').show()
     jQuery('#add-note-wrap').hide()
 }
 
-function show_insert_note() {
+function wp_fn_notes_show_insert_note() {
     // Empty the note id, title and desc before insert form display
     jQuery('#title').val('')
     jQuery('#description').val('')
@@ -160,7 +160,7 @@ function show_insert_note() {
     jQuery('#add-note-wrap').show()
 }
 
-function delete_note(id) {
+function wp_fn_notes_delete_note(id) {
 
     jQuery.ajax({
         url: notes_manage_public_ajax.ajaxurl,

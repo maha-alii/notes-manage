@@ -1,5 +1,4 @@
 <?php
-
 /**
  * The public-facing functionality of the plugin.
  *
@@ -21,7 +20,6 @@
  * @author     Maha Ali <maha@gmail.com>
  */
 class Notes_Manage_Public {
-
 	/**
 	 * The id  we get from our database table.
 	 *
@@ -68,9 +66,8 @@ class Notes_Manage_Public {
 	 * @param      string $version    The version of this plugin.
 	 */
 	public function __construct( $plugin_name, $version ) {
-
 		$this->plugin_name = $plugin_name;
-		$this->version     = $version;
+		$this->version = $version;
 	}
 
 	/**
@@ -91,7 +88,13 @@ class Notes_Manage_Public {
 		 * class.
 		 */
 
-		wp_enqueue_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'css/notes-manage-public.css', array(), $this->version, 'all' );
+		wp_enqueue_style(
+			$this->plugin_name,
+			plugin_dir_url( __FILE__ ) . 'css/notes-manage-public.css',
+			[],
+			$this->version,
+			'all'
+		);
 	}
 
 	/**
@@ -112,16 +115,39 @@ class Notes_Manage_Public {
 		 * class.
 		 */
 
-		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/notes-manage-public.js', array( 'jquery' ), $this->version, false );
-		wp_localize_script(
-			$this->plugin_name,
-			'notes_manage_public_ajax',
-			array(
+			wp_enqueue_script(
+				$this->plugin_name,
+				plugin_dir_url( __FILE__ ) . 'js/notes-manage-public.js',
+				['jquery' ],
+				$this->version,
+				false
+			);
+			wp_localize_script( $this->plugin_name, 'notes_manage_public_ajax', [
 				'ajaxurl' => admin_url( 'admin-ajax.php' ),
-				'nonce'   => wp_create_nonce( 'ajax-nonce' ),
-
-			)
-		);
+				'nonce' => wp_create_nonce( 'ajax-nonce' ),
+			] );
+	}
+		/**
+		 * Executes the user login function
+		 *
+		 * @return void
+		 */
+	public function user_login() {
+		if ( is_user_logged_in() ) {
+				$user_id = wp_get_current_user();
+				$user = get_userdataby( 'id', $note_id );
+		}
+	}
+	/**
+	 * Executes the function for not loggedin users.
+	 *
+	 * @return void
+	 */
+public function not_login() {
+		if ( ! is_user_logged_in() ) {
+			$unique_id = uniqid();
+			setcookie( 'user_id', $note_id, time() + 30 * 24 * 60 * 60 );
+		}
 	}
 
 	/**
@@ -137,11 +163,10 @@ class Notes_Manage_Public {
 		check_ajax_referer( 'ajax-nonce', 'nonce' );
 		// Update note on user sumbit.
 		if ( isset( $_POST['title'] ) && isset( $_POST['description'] ) ) {
-
 			// Update Note Ajax Callback code.
 			global $wpdb;
-			$note_id     = sanitize_text_field( wp_unslash( $_POST['id'] ) );
-			$title       = sanitize_text_field( wp_unslash( $_POST['title'] ) );
+			$note_id = sanitize_text_field( wp_unslash( $_POST['id'] ) );
+			$title = sanitize_text_field( wp_unslash( $_POST['title'] ) );
 			$description = sanitize_text_field( wp_unslash( $_POST['description'] ) );
 			// Check if title is empty.
 			if ( ! $title ) {
@@ -149,12 +174,15 @@ class Notes_Manage_Public {
 			}
 
 			$wpdb->query(
-				$wpdb->prepare( "UPDATE {$wpdb->prefix}notes SET title = %s , description = %s WHERE id = %d", $title, $description, $note_id )
+				$wpdb->prepare(
+					"UPDATE {$wpdb->prefix}notes SET title = %s , description = %s WHERE id = %d",
+					$title,
+					$description,
+					$note_id
+				)
 			);
 		}
 	}
-
-
 
 	/**
 	 * Executes the AJAX request on delete_note action triggered by JS
@@ -172,7 +200,7 @@ class Notes_Manage_Public {
 			global $wpdb;
 			$id = sanitize_text_field( wp_unslash( $_GET['id'] ) );
 			if ( $wpdb->query( $wpdb->prepare( "DELETE FROM {$wpdb->prefix}notes WHERE id = %d", $id ) ) ) {
-				echo 1; // Success indicator
+				echo 1; // Success indicator.
 			} else {
 				echo 'No rows affected. The record may not exist.';
 			}
@@ -180,18 +208,17 @@ class Notes_Manage_Public {
 		}
 	}
 
-
 	/**
 	 * Executes the AJAX request on insert_note action triggered by JS
 	 *
 	 * @return void
 	 */
 	public function insert_note() {
-		 check_ajax_referer( 'ajax-nonce', 'nonce' );
+		check_ajax_referer( 'ajax-nonce', 'nonce' );
 
 		if ( isset( $_POST['title'] ) && isset( $_POST['description'] ) ) {
 			// Insert Note Ajax Callback code.
-			$title       = sanitize_text_field( wp_unslash( $_POST['title'] ) );
+			$title = sanitize_text_field( wp_unslash( $_POST['title'] ) );
 			$description = sanitize_text_field( wp_unslash( $_POST['description'] ) );
 			// Check if title is empty.
 			if ( ! isset( $_POST['title'] ) ) {
@@ -200,41 +227,28 @@ class Notes_Manage_Public {
 			global $wpdb;
 
 			$wpdb->query(
-				$wpdb->prepare(
-					"INSERT INTO {$wpdb->prefix}notes( title, description )
-							VALUES ( %s, %s )",
-					array(
-						$title,
-						$description,
-					)
-				)
+				$wpdb->prepare( "INSERT INTO {$wpdb->prefix}notes( title, description )VALUES ( %s, %s )", [ $title , $description ] )
 			);
 			echo esc_html( $wpdb->insert_id );
 			wp_die();
-
 		}
 	}
 
-
 	/**
-	 * Basic structure of our code
+	 * Basic structure of our code.
 	 *
 	 * @return void
 	 */
 	public function show_notes_callback() {
-		 global $wpdb;
-		?>
-	
-			<div class='nm-show-notes-container'>
-
-				<h1>NOTES</h1>
-				<a onclick="show_insert_note()">
-					<button class="btn btn-lg btn-primary my-5  float-right-top">Insert</button>
+		 global $wpdb; ?>
+		<div class='wp-fn-notes-show-notes-container'>
+				<h1><?php esc_html_e( 'NOTES', 'wp-fn-notes' ); ?></h1>
+				<a onclick="wp_fn_notes_show_insert_note()">
+					<button class="btn btn-lg btn-primary my-5  float-right-top"><?php esc_html_e( 'Insert', 'wp-fn-notes' ); ?></button>
 				</a>
-				<a onclick="show_list_note()">
-					<button class="btn btn-lg btn-primary my-5  float-right-top ">List of notes</button>
+				<a onclick="wp_fn_notes_show_list_note()">
+					<button class="btn btn-lg btn-primary my-5  float-right-top "><?php esc_html_e( 'List of notes', 'wp-fn-notes' ); ?></button>
 				</a>
-
 				<table id="list-notes-wrap" class="table">
 					<thead>
 						<tr>
@@ -246,52 +260,50 @@ class Notes_Manage_Public {
 					</thead>
 					<tbody id="list-notes-body">
 						<?php
-
 						$notes = $wpdb->get_results( "SELECT id, title , description FROM {$wpdb->prefix}notes" );
 						foreach ( $notes as $notes_data ) {
-							$this->id          = $notes_data->id;
-							$this->title       = $notes_data->title;
-							$this->description = $notes_data->description;
-							?>
-							<tr id=note-<?php echo esc_html( $this->id ); ?>>
-								<th class="id"><?php echo esc_html( $this->id ); ?></th>
-								<td class="note-title"><?php echo esc_html( $this->title ); ?></td>
-								<td class="note-description"><?php echo esc_html( $this->description ); ?></td>
-								<td>
-									<a onclick="update_note(<?php echo esc_html( $this->id ); ?>)">
-										<button class="btn btn-lg btn-primary">Update</button>
-									</a>
 
-									<a onclick="delete_note(<?php echo esc_html( $this->id ); ?>)">
-										<button class="btn btn-lg btn-danger">Delete</button>
-									</a>
-								</td>
-							</tr>
+								$this->id = $notes_data->id;
+								$this->title = $notes_data->title;
+								$this->description = $notes_data->description;
+							?>
+						<tr id=note-<?php echo esc_html( $this->id ); ?>>
+							<th class="id"><?php echo esc_html( $this->id ); ?></th>
+							<td class="note-title"><?php echo esc_html( $this->title ); ?></td>
+							<td class="note-description"><?php echo esc_html( $this->description ); ?></td>
+							<td>
+								<a onclick="wp_fn_notes_update_note(<?php echo esc_html( $this->id ); ?>)">
+									<button class="btn btn-lg btn-primary"><?php esc_html_e( 'Update', 'wp-fn-notes' ); ?></button>
+								</a>
+								<a onclick="wp_fn_notes_delete_note(<?php echo esc_html( $this->id ); ?>)">
+									<button class="btn btn-lg btn-danger"><?php esc_html_e( 'Delete', 'wp-fn-notes' ); ?> </button>
+								</a>
+							</td>
+						</tr>
 							<?php
 						}
-
 						?>
 					</tbody>
 				</table>
-
 				<!-- HTML structre for Add Note -->
 				<div id="add-note-wrap">
-					<h2>Add Notes</h2>
+					<h2><?php esc_html_e( 'Add Notes', 'wp-fn-notes' ); ?></h2>
 					<form class="form" method="post">
 						<div class="form-group">
-							<label for="title">Title:</label>
+							<label for="title"><?php esc_html_e( 'Title', 'wp-fn-notes' ); ?></label>
 							<input class="form-control" name="title" id="title" required>
-							<p class="text-danger" id="title-warning" display=' hidden'>This field is required</p>
+							<p class="text-danger" id="title-warning" display=' hidden'><?php esc_html_e( 'This field is required', 'wp-fn-notes' ); ?></p>
 						</div>
 						<div class="form-group">
-							<label for="description">Description:</label>
+							<label for="description"><?php esc_html_e( 'Description', 'wp-fn-notes' ); ?></label>
 							<input class="form-control" name="description" id="description">
 						</div>
 						<input class="form-control" type="hidden" name="note_id" id="note_id" value="">
-						<button onclick="insert_note()" id="save-button" type="button" class="btn btn-primary" name="save">Save</button>
+						<button onclick="wp_fn_notes_insert_note()" id="save-button" type="button" class="btn btn-primary" name="save"><?php esc_html_e( 'Save', 'wp-fn-notes' ); ?></button>
 					</form>
 				</div>
-			</div>
-		<?php
+	</div>
+						<?php
 	}
 }
+
