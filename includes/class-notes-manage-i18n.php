@@ -35,7 +35,7 @@ class Notes_Manage_i18n {
 	public function load_plugin_textdomain() {
 
 		load_plugin_textdomain(
-			'notes-manage',
+			'wp-fn-notes',
 			false,
 			dirname( dirname( plugin_basename( __FILE__ ) ) ) . '/languages/'
 		);

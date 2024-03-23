@@ -50,6 +50,9 @@ function wp_fn_notes_insert_note() {
     var note_id = jQuery('#note_id').val()
     var title = jQuery('#title').val()
     var description = jQuery('#description').val()
+    var user_id = jQuery('#user_id').val()
+    console.log(user_id)
+
     /*Check if title is empty */
     if (title == '') {
         jQuery('#title-warning').show()
@@ -96,6 +99,7 @@ function wp_fn_notes_insert_note() {
             data: {
                 action: "insert_note",
                 nonce: notes_manage_public_ajax.nonce,
+                user_id: user_id,
                 title: title,
                 description: description,
             },
@@ -109,6 +113,9 @@ function wp_fn_notes_insert_note() {
                         '>\
                         <th>' +
                         note_id +
+                        '</th>\
+                        <th class="user-id">' +
+                        user_id +
                         '</th>\
                         <td class="note-title">' +
                         title +
@@ -154,6 +161,7 @@ function wp_fn_notes_show_insert_note() {
     jQuery('#title').val('')
     jQuery('#description').val('')
     jQuery('#note_id').val('')
+
 
     jQuery('#list-notes-wrap').hide()
     jQuery('#title-warning').hide()

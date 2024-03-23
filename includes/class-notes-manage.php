@@ -169,7 +169,15 @@ class Notes_Manage {
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_styles' );
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_scripts' );
 
-		add_shortcode( 'show_notes', array( $plugin_public, 'show_notes_callback' ) );
+		//shortcode to show all notes.
+		//add_shortcode( 'show_notes', array( $plugin_public, 'show_notes_callback' ) );
+
+		//shortcode to show only login user notes.
+		//add_shortcode( 'login_users_callback', array( $plugin_public, 'show_login_user_notes' ) );
+
+		//shortcode to show only non-login notes.
+		add_shortcode( 'non_login_users_callback', array( $plugin_public, 'show_non_login_user_notes' ) );
+
 
 		// Ajax request for insert when user is logged in.
 		$this->loader->add_action( 'wp_ajax_insert_note', $plugin_public, 'insert_note' );
@@ -188,12 +196,11 @@ class Notes_Manage {
 
 		// Ajax request for update when user is not logged in.
 		$this->loader->add_action( 'wp_ajax_nopriv_update_note', $plugin_public, 'update_note' );
+		// returns the log-in user's id.
+		$this->loader->add_action( 'wp_ajax_login_user_id', $plugin_public, 'login_user_id' );
 
-		//  when user is  logged in.
-		$this->loader->add_action( 'wp_ajax', $plugin_public, 'user_login' );
-
-		//  when user is not logged in.
-		$this->loader->add_action( 'wp_ajax_nopriv', $plugin_public, 'not_login' );
+		// when user is not logged in.
+		$this->loader->add_action( 'wp_ajax_nopriv_login_user_id', $plugin_public, 'login_user_id' );
 
 		// $this->loader->add_shortcode( 'show_notes', $plugin_public, 'enqueue_scripts' );
 

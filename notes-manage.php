@@ -76,6 +76,5 @@ function run_notes_manage() {
 
 	$plugin = new Notes_Manage();
 	$plugin->run();
-
 }
 run_notes_manage();
