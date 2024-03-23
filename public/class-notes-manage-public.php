@@ -91,6 +91,9 @@ class Notes_Manage_Public {
 		 */
 
 		wp_enqueue_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'css/notes-manage-public.css', array(), $this->version, 'all' );
+		wp_enqueue_style( 'font_awesome', '//cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css' );
+		wp_enqueue_style( 'google_fonts', '//fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap' );
+		wp_enqueue_style( 'mdn', '//cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/7.2.0/mdb.min.css' );
 	}
 
 	/**
@@ -112,6 +115,7 @@ class Notes_Manage_Public {
 		 */
 
 		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/notes-manage-public.js', array( 'jquery' ), $this->version, false );
+		wp_enqueue_script( 'mdn_script', '//cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/7.2.0/mdb.umd.min.js' );
 		wp_localize_script(
 			$this->plugin_name,
 			'notes_manage_public_ajax',
@@ -136,9 +140,8 @@ class Notes_Manage_Public {
 				$user_id = uniqid();
 				setcookie( 'wp_fn_notes_user_id', $user_id, time() + 712 * 24 * 60 * 60, '/' );
 				return $user_id;
-			}
-			else {
-				return $_COOKIE['wp_fn_notes_user_id'];
+			} else {
+					return $_COOKIE['wp_fn_notes_user_id'];
 			}
 		}
 	}
@@ -227,32 +230,7 @@ class Notes_Manage_Public {
 	 * @return void
 	 */
 	public function show_notes_callback() {
-		?>
-		<!DOCTYPE html>
-			<head>
-				<!-- Font Awesome -->
-				<link
-				href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
-				rel="stylesheet"
-				/>
-				<!-- Google Fonts -->
-				<link
-				href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap"
-				rel="stylesheet"
-				/>
-				<!-- MDB -->
-				<link
-				href="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/7.2.0/mdb.min.css"
-				rel="stylesheet"
-				/>
-			</head>
-			<body>
-				<!-- MDB -->
-				<script
-				type="text/javascript"
-				src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/7.2.0/mdb.umd.min.js"
-				></script>
-			
+		?>	
 		<?php
 		global $wpdb; ?>
 		<div class='wp-fn-notes-show-notes-container'>
@@ -333,33 +311,9 @@ class Notes_Manage_Public {
 
 	 public function show_login_user_notes() {
 		?>
-		<!DOCTYPE html>
-			<head>
-				<!-- Font Awesome -->
-				<link
-				href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
-				rel="stylesheet"
-				/>
-				<!-- Google Fonts -->
-				<link
-				href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap"
-				rel="stylesheet"
-				/>
-				<!-- MDB -->
-				<link
-				href="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/7.2.0/mdb.min.css"
-				rel="stylesheet"
-				/>
-			</head>
-			<body>
-				<!-- MDB -->
-				<script
-				type="text/javascript"
-				src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/7.2.0/mdb.umd.min.js"
-				></script>
-			
 		<?php
-		global $wpdb; ?>
+		global $wpdb;
+		 ?>
 		<div class='wp-fn-notes-show-notes-container'>
 			<h1><?php esc_html_e( 'NOTES', 'wp-fn-notes' ); ?></h1>
 			<a onclick="wp_fn_notes_show_insert_note()" >
@@ -380,9 +334,8 @@ class Notes_Manage_Public {
 				</thead>
 				<tbody id="list-notes-body">
 					<?php
-					global $wpdb;
-					$current_user = wp_get_current_user(); // Getting current user logged in.
-					$user_id      = $current_user->ID;     // Get user ID to use in meta function.
+					$current_user = wp_get_current_user();
+					$user_id      = $current_user->ID;
 					$notes = $wpdb->get_results( "SELECT * FROM {$wpdb->prefix}notes WHERE user_id = $user_id" );
 					foreach ( $notes as $notes_data ) {
 
@@ -441,31 +394,6 @@ class Notes_Manage_Public {
 	 */
 	public function show_non_login_user_notes() {
 		?>
-		<!DOCTYPE html>
-			<head>
-				<!-- Font Awesome -->
-				<link
-				href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
-				rel="stylesheet"
-				/>
-				<!-- Google Fonts -->
-				<link
-				href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap"
-				rel="stylesheet"
-				/>
-				<!-- MDB -->
-				<link
-				href="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/7.2.0/mdb.min.css"
-				rel="stylesheet"
-				/>
-			</head>
-			<body>
-				<!-- MDB -->
-				<script
-				type="text/javascript"
-				src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/7.2.0/mdb.umd.min.js"
-				></script>
-			
 		<?php
 		global $wpdb;
 		 ?>
@@ -477,6 +405,7 @@ class Notes_Manage_Public {
 			<a onclick="wp_fn_notes_show_list_note()">
 				<button class="btn btn-lg btn-primary my-5  float-right-top "><?php esc_html_e( 'List of notes', 'wp-fn-notes' ); ?></button>
 			</a>
+			<h5> You are not logged in your data is stored in browser and may be lost . Please login first to save them permanently.</h5>
 			<table id="list-notes-wrap" class="table">
 				<thead>
 					<tr>
@@ -491,11 +420,9 @@ class Notes_Manage_Public {
 					<?php
 					global $wpdb;
 					$user_id = $_COOKIE['wp_fn_notes_user_id'];
-					//$notes = $wpdb->get_results( "SELECT * FROM {$wpdb->prefix}notes WHERE %s = 'user_id', $user_id" );
-					//$notes = $wpdb->prepare( "SELECT * FROM {$wpdb->prefix}notes WHERE  user_id = %s", $user_id );
-					$sql = "SELECT * FROM {$wpdb->prefix}notes WHERE user_id = %d";
-					$sqls = $wpdb->prepare( $sql , array($user_id) );
-					$notes = $wpdb->get_results($sqls);
+					$select_notes = "SELECT * FROM {$wpdb->prefix}notes WHERE user_id = %d";
+					$select_notes = $wpdb->prepare( $select_notes ,array( $user_id) );
+					$notes = $wpdb->get_results( $select_notes );
 					foreach ( $notes as $notes_data ) {
 						$this->id          = $notes_data->id;
 						$this->user_id     = $notes_data->user_id;
