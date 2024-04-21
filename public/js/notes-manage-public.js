@@ -51,7 +51,6 @@ function wp_fn_notes_insert_note() {
     var title = jQuery('#title').val()
     var description = jQuery('#description').val()
     var user_id = jQuery('#user_id').val()
-    console.log(user_id)
 
     /*Check if title is empty */
     if (title == '') {
@@ -124,15 +123,15 @@ function wp_fn_notes_insert_note() {
                         description +
                         '</td>\
                         <td> \
-                            <a onclick="update_note(' +
+                            <a onclick="wp_fn_notes_update_note(' +
                         note_id +
                         ')">\
-                                <button class="btn btn-lg btn-primary">Update</button>\
+                        <i class="fas fa-rotate"></i>\
                             </a>\
-                            <a onclick="delete_note(' +
+                            <a onclick="wp_fn_notes_delete_note(' +
                         note_id +
                         ')">\
-                                <button class="btn btn-lg btn-danger">Delete</button>\
+                        <i class="fas fa-trash-can"> </i>\
                             </a>\
                         </td>\
                     </tr>'

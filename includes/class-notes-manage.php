@@ -168,16 +168,13 @@ class Notes_Manage {
 
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_styles' );
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_scripts' );
+	
 
 		//shortcode to show all notes.
-		//add_shortcode( 'show_notes', array( $plugin_public, 'show_notes_callback' ) );
+		add_shortcode( 'wpfn_all_notes', array( $plugin_public, 'wp_fn_all_notes' ) );
 
 		//shortcode to show only login user notes.
-		//add_shortcode( 'login_users_callback', array( $plugin_public, 'show_login_user_notes' ) );
-
-		//shortcode to show only non-login notes.
-		add_shortcode( 'non_login_users_callback', array( $plugin_public, 'show_non_login_user_notes' ) );
-
+		add_shortcode( 'wpfn_my_notes', array( $plugin_public, 'wp_fn_my_notes' ) );
 
 		// Ajax request for insert when user is logged in.
 		$this->loader->add_action( 'wp_ajax_insert_note', $plugin_public, 'insert_note' );
