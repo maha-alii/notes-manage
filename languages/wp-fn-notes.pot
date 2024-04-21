@@ -1,0 +1,77 @@
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: WP Frontend Notes\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-03-09 17:28+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: \n"
+"Language: \n"
+"Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Loco https://localise.biz/\n"
+"X-Loco-Version: 2.6.6; wp-6.4.3\n"
+"X-Domain: wp-fn-notes"
+
+#: public/class-notes-manage-public.php:290
+msgid "Add Notes"
+msgstr ""
+
+#: public/class-notes-manage-public.php:279
+msgid "Delete"
+msgstr ""
+
+#: public/class-notes-manage-public.php:298
+msgid "Description"
+msgstr ""
+
+#. Author URI of the plugin
+msgid "https://github.com/maha-alii/"
+msgstr ""
+
+#. URI of the plugin
+msgid "https://wordpress.org/plugins/video-conferencing-with-bbb/"
+msgstr ""
+
+#: public/class-notes-manage-public.php:247
+msgid "Insert"
+msgstr ""
+
+#: public/class-notes-manage-public.php:250
+msgid "List of notes"
+msgstr ""
+
+#. Author of the plugin
+msgid "Maha Ali"
+msgstr ""
+
+#. Description of the plugin
+msgid "Manage notes on frontend with AJAX"
+msgstr ""
+
+#: public/class-notes-manage-public.php:245
+msgid "NOTES"
+msgstr ""
+
+#: public/class-notes-manage-public.php:302
+msgid "Save"
+msgstr ""
+
+#: public/class-notes-manage-public.php:295
+msgid "This field is required"
+msgstr ""
+
+#: public/class-notes-manage-public.php:293
+msgid "Title"
+msgstr ""
+
+#: public/class-notes-manage-public.php:276
+msgid "Update"
+msgstr ""
+
+#. Name of the plugin
+msgid "WP Frontend Notes"
+msgstr ""

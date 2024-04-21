@@ -115,7 +115,7 @@ class Notes_Manage_Public {
 		 */
 
 		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/notes-manage-public.js', array( 'jquery' ), $this->version, false );
-		wp_enqueue_script( 'wp_fn_notes_mdb_script', '//cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/7.2.0/mdb.umd.min.js');
+		wp_enqueue_script( 'wp_fn_notes_mdb_script', '//cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/7.2.0/mdb.umd.min.js' );
 		wp_localize_script(
 			$this->plugin_name,
 			'notes_manage_public_ajax',
@@ -136,12 +136,12 @@ class Notes_Manage_Public {
 			return $user_id;
 		}
 		if ( ! is_user_logged_in() ) {
-			if ( ! isset( $_COOKIE['wp_fn_notes_user_id']) ) {
+			if ( ! isset( $_COOKIE['wp_fn_notes_user_id'] ) ) {
 				$user_id = uniqid();
 				setcookie( 'wp_fn_notes_user_id', $user_id, time() + 712 * 24 * 60 * 60, '/' );
 				return $user_id;
-			} elseif ( isset( $_COOKIE['wp_fn_notes_user_id']) ){
-					return  $_COOKIE['wp_fn_notes_user_id'] ;
+			} elseif ( isset( $_COOKIE['wp_fn_notes_user_id'] ) ) {
+					return $_COOKIE['wp_fn_notes_user_id'];
 			}
 		}
 	}
@@ -169,7 +169,7 @@ class Notes_Manage_Public {
 				return;
 			}
 
-			$wpdb->query( $wpdb->prepare( "UPDATE {$wpdb->prefix}notes SET title = %s , description = %s WHERE id = %d", $title, $description, $note_id ) );
+			$wpdb->query( $wpdb->prepare( "UPDATE {$wpdb->prefix}fn_notes SET title = %s , description = %s WHERE id = %d", $title, $description, $note_id ) );
 		}
 	}
 
@@ -188,7 +188,7 @@ class Notes_Manage_Public {
 			// Delete Note Ajax Callback code.
 			global $wpdb;
 			$id = sanitize_text_field( wp_unslash( $_GET['id'] ) );
-			if ( $wpdb->query( $wpdb->prepare( "DELETE FROM {$wpdb->prefix}notes WHERE id = %d", $id ) ) ) {
+			if ( $wpdb->query( $wpdb->prepare( "DELETE FROM {$wpdb->prefix}fn_notes WHERE id = %d", $id ) ) ) {
 				echo 1; // Success indicator.
 
 			} else {
@@ -206,9 +206,9 @@ class Notes_Manage_Public {
 	public function insert_note() {
 		check_ajax_referer( 'ajax-nonce', 'nonce' );
 
-		if ( isset( $_POST['title'] )  ) {
+		if ( isset( $_POST['title'] ) ) {
 			// Insert Note Ajax Callback code.
-			$user_id = $this->login_user_id();
+			$user_id     = $this->login_user_id();
 			$title       = sanitize_text_field( wp_unslash( $_POST['title'] ) );
 			$description = sanitize_text_field( wp_unslash( $_POST['description'] ) );
 			// Check if title is empty.
@@ -217,7 +217,7 @@ class Notes_Manage_Public {
 			}
 			global $wpdb;
 
-			$wpdb->query( $wpdb->prepare( "INSERT INTO {$wpdb->prefix}notes( user_info , title, description )VALUES ( %s, %s, %s )", array( $user_id, $title, $description ) ) );
+			$wpdb->query( $wpdb->prepare( "INSERT INTO {$wpdb->prefix}fn_notes( user_info , title, description )VALUES ( %s, %s, %s )", array( $user_id, $title, $description ) ) );
 			echo esc_html( $wpdb->insert_id );
 			wp_die();
 		}
@@ -230,68 +230,72 @@ class Notes_Manage_Public {
 	 * @return void
 	 */
 	public function wp_fn_all_notes() {
-		global $wpdb; 
-		
-					$notes = $wpdb->get_results( "SELECT id,user_info, title , description FROM {$wpdb->prefix}notes" );
-					foreach ( $notes as $notes_data ) {
+		$this->enqueue_scripts();
+		$this->enqueue_styles();
+		global $wpdb;
 
-						$this->id          = $notes_data->id;
-						$this->user_id     = $notes_data->user_info;
-						$this->title       = $notes_data->title;
-						$this->description = $notes_data->description;
-					}
-			
+		$notes = $wpdb->get_results( "SELECT id,user_info, title , description FROM {$wpdb->prefix}fn_notes" );
+		foreach ( $notes as $notes_data ) {
+
+			$this->id          = $notes_data->id;
+			$this->user_id     = $notes_data->user_info;
+			$this->title       = $notes_data->title;
+			$this->description = $notes_data->description;
+		}
+
 		ob_start();
-		include  dirname( __FILE__ ) .'\partials\notes-manage-public-display.php' ;
+		include dirname( __FILE__ ) . DIRECTORY_SEPARATOR . 'partials' . DIRECTORY_SEPARATOR . 'notes-manage-public-display.php';
 		$template_output = ob_get_clean();
-        return $template_output;
+		return $template_output;
 	}
-		
-	
+
+
 	/**
 	 * Basic structure of our code for  login users.
 	 *
 	 * @return void
 	 */
 
-	 public function wp_fn_my_notes() {
+	public function wp_fn_my_notes() {
+		$this->enqueue_scripts();
+		$this->enqueue_styles();
 		global $wpdb;
-						if ( is_user_logged_in() ) {
-							$current_user = wp_get_current_user();
-							$user_id      = $current_user->ID;
-							$user_name  = $current_user->user_login;
+		if ( is_user_logged_in() ) {
+			$current_user = wp_get_current_user();
+			$user_id      = $current_user->ID;
+			$user_name    = $current_user->user_login;
 
-							$notes = $wpdb->get_results( "SELECT * FROM {$wpdb->prefix}notes WHERE user_info = $user_id" );
-							foreach ( $notes as $notes_data ) {
+			$notes = $wpdb->get_results( "SELECT * FROM {$wpdb->prefix}fn_notes WHERE user_info = $user_id" );
+			foreach ( $notes as $notes_data ) {
 
-								$this->id          = $notes_data->id;
-								$this->user_id     = $user_name;
-								$this->title       = $notes_data->title;
-								$this->description = $notes_data->description;
-					
-					}
-				}
-				if ( ! is_user_logged_in() ) {
-					if ( isset( $_COOKIE['wp_fn_notes_user_id']) ){
-					$user_id =  $_COOKIE['wp_fn_notes_user_id'];
-					$user_name = "Guest";
-					$select_notes = "SELECT * FROM {$wpdb->prefix}notes WHERE user_info = %d";
-					$select_notes = $wpdb->prepare( $select_notes, array( $user_id) );
-					$notes = $wpdb->get_results( $select_notes );
-					foreach ( $notes as $notes_data ) {
+				$this->id          = $notes_data->id;
+				$this->user_id     = $user_name;
+				$this->title       = $notes_data->title;
+				$this->description = $notes_data->description;
 
-						$this->id          = $notes_data->id;
-						$this->user_id     = $user_name;
-						$this->title       = $notes_data->title;
-						$this->description = $notes_data->description;
+			}
+		}
+		if ( ! is_user_logged_in() ) {
+			if ( isset( $_COOKIE['wp_fn_notes_user_id'] ) ) {
+				   $user_id      = $_COOKIE['wp_fn_notes_user_id'];
+				   $user_name    = 'Guest';
+				   $select_notes = "SELECT * FROM {$wpdb->prefix}fn_notes WHERE user_info = %d";
+				   $select_notes = $wpdb->prepare( $select_notes, array( $user_id ) );
+				   $notes        = $wpdb->get_results( $select_notes );
+				foreach ( $notes as $notes_data ) {
+
+					$this->id          = $notes_data->id;
+					$this->user_id     = $user_name;
+					$this->title       = $notes_data->title;
+					$this->description = $notes_data->description;
 
 				}
 			}
 		}
-		ob_start();
-		include  dirname( __FILE__ ) .'\partials\notes-manage-public-display.php' ;
-		$template_output = ob_get_clean();
-        return $template_output;
-	
+		  ob_start();
+		  include dirname( __FILE__ ) . DIRECTORY_SEPARATOR . 'partials'. DIRECTORY_SEPARATOR .'notes-manage-public-display.php';
+		  $template_output = ob_get_clean();
+		  return $template_output;
+
 	}
 }

@@ -12,9 +12,9 @@
  * @package           Notes_Manage
  *
  * @wordpress-plugin
- * Plugin Name:       WP Frontend Notes
- * Plugin URI:        https://wordpress.org/plugins/video-conferencing-with-bbb/
- * Description:       Manage notes on frontend with AJAX
+ * Plugin Name:       Frontend Notes
+ * Plugin URI:        https://wordpress.org/plugins/frontend-notes
+ * Description:       Manage notes from WordPress frontend for both login and non-login users
  * Version:           1.0.0
  * Author:            Maha Ali
  * Author URI:        https://github.com/maha-alii/
