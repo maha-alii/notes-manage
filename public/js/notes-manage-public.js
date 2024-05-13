@@ -107,13 +107,8 @@ function wp_fn_notes_insert_note() {
                 if (!isNaN(response)) {
                     var note_id = response
                     jQuery('#list-notes-body').append(
-                        '<tr id=note-' +
-                        note_id +
-                        '>\
-                        <th>' +
-                        note_id +
-                        '</th>\
-                        <th class="user-id">' +
+                        
+                        '<th class="user-id">' +
                         user_id +
                         '</th>\
                         <td class="note-title">' +
@@ -126,12 +121,12 @@ function wp_fn_notes_insert_note() {
                             <a onclick="wp_fn_notes_update_note(' +
                         note_id +
                         ')">\
-                        <i class="fas fa-rotate"></i>\
+                        <i class="fas fa-pen-to-square fa-2x"></i>\
                             </a>\
                             <a onclick="wp_fn_notes_delete_note(' +
                         note_id +
                         ')">\
-                        <i class="fas fa-trash-can"> </i>\
+                        <i class="fas fa-trash-can fa-2x"> </i>\
                             </a>\
                         </td>\
                     </tr>'
